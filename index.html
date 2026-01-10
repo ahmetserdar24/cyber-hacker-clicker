@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep OS v3.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Ses Kontrolü -->
+    <div id="sound-overlay" class="sound-control">
+        <div class="sound-icon" onclick="toggleSound()">🔊</div>
+        <div class="sound-tooltip">Ses Kontrolü</div>
+    </div>
+
+    <!-- Boot Sequence Ekranı -->
+    <div id="boot-sequence">
+        <div class="boot-content">
+            <div class="bios-header">
+                <div class="bios-logo">█ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄ ▄</div>
+                <div class="bios-title">DEEP OS v3.0 BIOS</div>
+            </div>
+            <div class="boot-progress-container">
+                <div id="boot-progress" class="boot-progress"></div>
+            </div>
+            <div id="boot-log" class="boot-log"></div>
+            <div class="boot-footer">Press any key to enter setup... [SKIPPING]</div>
+        </div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="welcome-screen">
+        <div class="welcome-content">
+            <div class="welcome-glitch" data-text="DEEP WEB">DEEP WEB</div>
+            <div class="welcome-subtitle">HACKER SIMULATOR</div>
+            <div class="welcome-version">v3.0 - Ultimate Edition</div>
+            <div class="welcome-warning">
+                ⚠️ UYARI: Bu sanal ortamda yasadışı faaliyetler simülasyonudur.<br>
+                Gerçek hayatta kullanmayınız!
+            </div>
+            <div class="welcome-stats">
+                <div class="stat-box">
+                    <span class="stat-label">Global Hackers</span>
+                    <span class="stat-value" id="global-hackers">1,337,420</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Active Nodes</span>
+                    <span class="stat-value" id="active-nodes">89,234</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">BTC Stolen</span>
+                    <span class="stat-value" id="btc-stolen">₿ 4,521.89</span>
+                </div>
+            </div>
+            <button class="start-btn" onclick="startGame()">
+                <span class="btn-glitch" data-text="CONNECT TO DEEP WEB">CONNECT TO DEEP WEB</span>
+            </button>
+            <div class="welcome-options">
+                <span onclick="loadGame()">💾 Kayıtlı Oyun</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CRT Overlay Efekti -->
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
+
+    <!-- Ana Masaüstü -->
+    <div id="desktop" class="desktop">
+        
+        <!-- Masaüstü İkonları -->
+        <div class="icon-column">
+            <div class="icon" onclick="openWindow('win-terminal')">
+                <div class="icon-box">💻</div>
+                <span>Terminal</span>
+            </div>
+            <div class="icon" onclick="openWindow('win-profile')">
+                <div class="icon-box">👤</div>
+                <span>Profil</span>
+            </div>
+            <div class="icon" onclick="openWindow('win-leaderboard')">
+                <div class="icon-box">📊</div>
+                <span>Sıralama</span>
+            </div>
+            <div class="icon" onclick="openWindow('win-chat')">
+                <div class="icon-box">💬</div>
+                <span>Chat</span>
+            </div>
+            <div class="icon" onclick="openWindow('win-settings')">
+                <div class="icon-box">⚙️</div>
+                <span>Ayarlar</span>
+            </div>
+        </div>
+
+        <!-- Merkez Alan - İstatistikler -->
+        <div class="center-stats">
+            <div class="quick-stats-main">
+                <div class="stat-display">
+                    <span class="stat-label">💰 CÜZDAN</span>
+                    <span class="stat-value" id="quick-btc">0.000 DC</span>
+                </div>
+                <div class="stat-display">
+                    <span class="stat-label">⚡ XP</span>
+                    <span class="stat-value" id="quick-xp">0</span>
+                </div>
+                <div class="stat-display">
+                    <span class="stat-label">🏆 RÜTBE</span>
+                    <span class="stat-value" id="quick-rank">Script Kiddie</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Penceresi -->
+        <div id="win-terminal" class="window" data-title="Terminal - Deep OS" style="display:none; width:700px; height:450px; top:50px; left:200px;">
+            <div class="header"><span class="title">█ T-DOS Command Prompt v3.0</span>
+                <div class="controls">
+                    <div class="control-btn minimize" onclick="minimizeWindow('win-terminal')">─</div>
+                    <div class="control-btn maximize" onclick="maximizeWindow('win-terminal')">□</div>
+                    <div class="control-btn close" onclick="closeWindow('win-terminal')">✕</div>
+                </div>
+            </div>
+            <div class="content terminal-bg">
+                <div id="terminal-out"></div>
+                <div class="terminal-input-row">
+                    <span style="color: #00ff41;">></span>
+                    <input type="text" id="term-input" autocomplete="off" autofocus>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profil Penceresi -->
+        <div id="win-profile" class="window" data-title="Kullanıcı Profili" style="display:none; width:500px; height:600px; top:100px; left:500px;">
+            <div class="header"><span class="title">👤 Kullanıcı Profili</span>
+                <div class="controls">
+                    <div class="control-btn minimize" onclick="minimizeWindow('win-profile')">─</div>
+                    <div class="control-btn maximize" onclick="maximizeWindow('win-profile')">□</div>
+                    <div class="control-btn close" onclick="closeWindow('win-profile')">✕</div>
+                </div>
+            </div>
+            <div class="profile-content">
+                <div class="profile-header">
+                    <div class="avatar-container">
+                        <div class="avatar" id="profile-avatar">👤</div>
+                        <div class="level-badge" id="profile-level">Lv.1</div>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-name">Unknown_Hacker</div>
+                        <div class="profile-rank" id="profile-rank">Script Kiddie</div>
+                        <div class="profile-xp-bar">
+                            <div class="xp-fill" id="profile-xp-fill"></div>
+                        </div>
+                        <div class="xp-text"><span id="current-xp">0</span> / <span id="next-level-xp">100</span> XP</div>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <span class="stat-icon">💰</span>
+                        <span class="stat-info">
+                            <span class="stat-name">Toplam Kazanç</span>
+                            <span class="stat-value" id="total-earned">0 DC</span>
+                        </span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-icon">☢️</span>
+                        <span class="stat-info">
+                            <span class="stat-name">Hack Sayısı</span>
+                            <span class="stat-value" id="total-hacks">0</span>
+                        </span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-icon">🎯</span>
+                        <span class="stat-info">
+                            <span class="stat-name">Başarım</span>
+                            <span class="stat-value" id="achievements-unlocked">0/15</span>
+                        </span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-icon">⏱️</span>
+                        <span class="stat-info">
+                            <span class="stat-name">Oyun Süresi</span>
+                            <span class="stat-value" id="play-time">0s</span>
+                        </span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-icon">🔒</span>
+                        <span class="stat-info">
+                            <span class="stat-name">Sistem Kırıldı</span>
+                            <span class="stat-value" id="systems-hacked">0</span>
+                        </span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-icon">⚠️</span>
+                        <span class="stat-info">
+                            <span class="stat-name">Tehlike Seviyesi</span>
+                            <span class="stat-value" id="max-threat">0%</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="profile-btn" onclick="saveGame()">💾 Oyunu Kaydet</button>
+                    <button class="profile-btn" onclick="resetGame()">🗑️ Oyunu Sıfırla</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Penceresi -->
+        <div id="win-leaderboard" class="window" data-title="Global Sıralama" style="display:none; width:500px; height:550px; top:80px; left:600px;">
+            <div class="header"><span class="title">📊 Global Hacker Sıralaması</span>
+                <div class="controls">
+                    <div class="control-btn minimize" onclick="minimizeWindow('win-leaderboard')">─</div>
+                    <div class="control-btn maximize" onclick="maximizeWindow('win-leaderboard')">□</div>
+                    <div class="control-btn close" onclick="closeWindow('win-leaderboard')">✕</div>
+                </div>
+            </div>
+            <div class="leaderboard-container">
+                <div class="leaderboard-filters">
+                    <button class="lb-filter active" onclick="switchLeaderboard('total')">Toplam Kazanç</button>
+                    <button class="lb-filter" onclick="switchLeaderboard('hacks')">Hack Sayısı</button>
+                    <button class="lb-filter" onclick="switchLeaderboard('level')">Seviye</button>
+                </div>
+                <div class="leaderboard-list" id="leaderboard-list"></div>
+            </div>
+        </div>
+
+        <!-- Chat Penceresi -->
+        <div id="win-chat" class="window" data-title="Global Chat" style="display:none; bottom:60px; right:20px; width:350px; height:400px;">
+            <div class="header"><span class="title">💬 Deep Web Chat</span>
+                <div class="controls">
+                    <div class="control-btn minimize" onclick="minimizeWindow('win-chat')">─</div>
+                    <div class="control-btn close" onclick="closeWindow('win-chat')">✕</div>
+                </div>
+            </div>
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Mesaj yaz..." maxlength="100">
+                <button onclick="sendChatMessage()">GÖNDER</button>
+            </div>
+        </div>
+
+        <!-- Ayarlar Penceresi -->
+        <div id="win-settings" class="window" data-title="Ayarlar" style="display:none; width:500px; height:450px; top:150px; left:500px;">
+            <div class="header"><span class="title">⚙️ Sistem Ayarları</span>
+                <div class="controls">
+                    <div class="control-btn minimize" onclick="minimizeWindow('win-settings')">─</div>
+                    <div class="control-btn maximize" onclick="maximizeWindow('win-settings')">□</div>
+                    <div class="control-btn close" onclick="closeWindow('win-settings')">✕</div>
+                </div>
+            </div>
+            <div class="settings-content">
+                <div class="settings-group">
+                    <div class="settings-title">🎵 Ses Ayarları</div>
+                    <div class="setting-item">
+                        <span>Genel Ses</span>
+                        <input type="range" id="volume-master" min="0" max="100" value="50" onchange="updateVolume('master', this.value)">
+                        <span id="volume-master-val">50%</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>Ambient Müzik</span>
+                        <input type="range" id="volume-ambient" min="0" max="100" value="30" onchange="updateVolume('ambient', this.value)">
+                        <span id="volume-ambient-val">30%</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>Efekt Sesleri</span>
+                        <input type="range" id="volume-sfx" min="0" max="100" value="70" onchange="updateVolume('sfx', this.value)">
+                        <span id="volume-sfx-val">70%</span>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <div class="settings-title">🎨 Görsel Ayarları</div>
+                    <div class="setting-item toggle">
+                        <span>CRT Efekti</span>
+                        <label class="switch">
+                            <input type="checkbox" id="opt-crt" checked onchange="toggleOption('crt', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item toggle">
+                        <span>Scanlines</span>
+                        <label class="switch">
+                            <input type="checkbox" id="opt-scanlines" checked onchange="toggleOption('scanlines', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item toggle">
+                        <span>Glitch Efektleri</span>
+                        <label class="switch">
+                            <input type="checkbox" id="opt-glitch" checked onchange="toggleOption('glitch', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item toggle">
+                        <span>Glow Efekti</span>
+                        <label class="switch">
+                            <input type="checkbox" id="opt-glow" checked onchange="toggleOption('glow', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <div class="settings-title">🎮 Oyun Ayarları</div>
+                    <div class="setting-item">
+                        <span>Kullanıcı Adı</span>
+                        <input type="text" id="setting-username" placeholder="Hacker adınız" maxlength="20">
+                    </div>
+                    <div class="setting-item toggle">
+                        <span>Otomatik Kaydetme</span>
+                        <label class="switch">
+                            <input type="checkbox" id="opt-autosave" checked onchange="toggleOption('autosave', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <button class="settings-save-btn" onclick="saveSettings()">💾 Ayarları Kaydet</button>
+            </div>
+        </div>
+
+        <!-- Bildirim Alanı -->
+        <div id="notification-area" class="notification-area"></div>
+
+        <!-- Trace/Uyarı Overlay -->
+        <div id="trace-warning" class="trace-warning" style="display:none;">
+            <div class="trace-content">
+                <div class="trace-icon">⚠️</div>
+                <div class="trace-text">POLICE TRACE DETECTED</div>
+                <div class="trace-bar">
+                    <div class="trace-fill" id="trace-fill"></div>
+                </div>
+                <div class="trace-percent" id="trace-percent">0%</div>
+            </div>
+        </div>
+
+        <!-- Görev Çubuğu -->
+        <div id="taskbar" class="taskbar">
+            <div class="start-menu">
+                <div class="start-icon">█</div>
+                <span class="start-text">DEEP OS</span>
+            </div>
+            <div id="taskbar-apps" class="taskbar-apps"></div>
+            <div class="taskbar-system">
+                <div class="system-tray">
+                    <span id="tray-wallet" class="tray-item">💰 0 DC</span>
+                    <span id="tray-xp" class="tray-item">⚡ 0 XP</span>
+                    <span id="tray-threat" class="tray-item threat-low">🛡️ DÜŞÜK</span>
+                    <span id="tray-time" class="tray-item">00:00</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Ses Dosyaları (Base64 embed) -->
+    <script>
+        // Ses efektleri için Audio Context
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+        let soundEnabled = true;
+        let volumes = { master: 50, ambient: 30, sfx: 70 };
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled || !audioCtx) return;
+            
+            const gainNode = audioCtx.createGain();
+            gainNode.connect(audioCtx.destination);
+            
+            let volume = volumes.sfx / 100;
+            if (type === 'ambient') volume = volumes.ambient / 100;
+            
+            gainNode.gain.value = volume;
+
+            const oscillator = audioCtx.createOscillator();
+            oscillator.connect(gainNode);
+
+            switch(type) {
+                case 'hack':
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'square';
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.1);
+                    break;
+                case 'success':
+                    oscillator.frequency.value = 1200;
+                    oscillator.type = 'sine';
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.3);
+                    break;
+                case 'error':
+                    oscillator.frequency.value = 150;
+                    oscillator.type = 'sawtooth';
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.5);
+                    break;
+                case 'warning':
+                    oscillator.frequency.value = 600;
+                    oscillator.type = 'square';
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.2);
+                    break;
+                case 'upgrade':
+                    oscillator.frequency.value = 600;
+                    oscillator.type = 'sine';
+                    oscillator.frequency.exponentialRampToValueAtTime(1800, audioCtx.currentTime + 0.5);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.5);
+                    break;
+            }
+        }
+
+        function playAmbient() {
+            if (!soundEnabled || !audioCtx) return;
+            
+            setInterval(() => {
+                if (!soundEnabled) return;
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 50 + Math.random() * 30;
+                gainNode.gain.value = (volumes.ambient / 100) * 0.02;
+                
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 2);
+            }, 3000);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.querySelector('.sound-icon').textContent = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled) initAudio();
+        }
+    </script>
+
+    <!-- Ana Scriptler -->
+    <script src="js/kernel.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>
